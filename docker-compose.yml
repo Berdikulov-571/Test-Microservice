@@ -1,0 +1,25 @@
+version: '3.4'
+
+services:
+  sqldata:
+      volumes:
+        - ./db:/var/opt/mssql/data 
+      image: mcr.microsoft.com/mssql/server:2019-latest
+      environment:
+          - SA_PASSWORD=Numsey#2022
+          - ACCEPT_EULA=Y
+      ports:
+          - "1450:1433"
+
+
+  registration.api:
+    image: ${DOCKER_REGISTRY-}registrationapi
+    build:
+      context: .
+      dockerfile: src/Registration/Registration.Api/Dockerfile
+
+  authorization.api:
+    image: ${DOCKER_REGISTRY-}authorizationapi
+    build:
+      context: .
+      dockerfile: src/Authorization/Authorization.Api/Dockerfile

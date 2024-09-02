@@ -1,7 +1,7 @@
-using Registration.Application;
-using Registration.Inftastructure;
+using Authorization.Core;
+using Authorization.Core.Services;
 
-namespace Registration.Api
+namespace Authorization.Api
 {
     public class Program
     {
@@ -9,12 +9,15 @@ namespace Registration.Api
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Services.AddScoped<UserService>();
+            builder.Services.AddScoped<JWTService>();
+            
+            builder.Services.AddJWTLayer();
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddHttpClient();
 
-            builder.Services.AddApplication();
-            builder.Services.AddInftastructure(builder.Configuration);
 
             var app = builder.Build();
 
@@ -23,13 +26,15 @@ namespace Registration.Api
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseHttpsRedirection();
             app.UseCors(options =>
             {
                 options.AllowAnyMethod();
                 options.AllowAnyOrigin();
                 options.AllowAnyHeader();
             });
-            app.UseHttpsRedirection();
+            app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
             app.Run();
